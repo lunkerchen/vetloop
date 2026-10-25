@@ -1,6 +1,6 @@
 # VetLoop Prototype
 
-獸醫在環（human-in-the-loop）的照護 Prototype，參加 AIforPets 2027「獸醫照護」主題。
+獸醫在環（human-in-the-loop）的照護 Prototype，參加「2026 法國皇家 AI for Pets 創新徵件計畫」（主題：獸醫照護）。
 流程：AI 幫飼主整理問診 → 獸醫看摘要、開醫囑 → AI 把醫囑改寫成白話計畫 → **獸醫核可後**才送給飼主 → 照護期間定時提醒，飼主的回報再交給獸醫審。
 
 ## 使用流程
