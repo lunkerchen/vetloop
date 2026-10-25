@@ -119,6 +119,25 @@ python3.12 -m venv .venv
 12. **緊急情境**：在豆豆的手機傳「牠剛剛好像吞了一段繩子」。飼主立刻收到固定話術（請立即致電醫院），不經 AI；後台「緊急通知」整塊轉紅，按「知道了」標為已讀。
 13. 錄完用「重設示範資料」回到起點。
 
+## 介紹影片（`video/`）
+
+參賽用的介紹影片（約 1 分 59 秒，無旁白）是用上面的 Demo 腳本實機錄出來的，步驟 11（修改醫囑）沒有入鏡。重做流程：
+
+```sh
+# 1. 另開終端起 app（埠號 5051），重設示範資料後錄影；會呼叫真的 Claude CLI
+cd video && npm install && npx playwright install chromium
+node record.mjs raw
+# 2. 影格轉成片段與時間軸
+python3 build_clips.py raw film/assets
+# 3. 產生 HyperFrames 合成檔（剪輯表、鏡頭、字卡都在 build_film.py）並渲染
+python3 build_film.py
+(cd film && npx --yes hyperframes@0.8.198 render --video-frame-format png -o ../renders/silent.mp4)
+# 4. 混入配樂，輸出 renders/VetLoop-intro.mp4
+sh finish.sh
+```
+
+配樂需另外放到 `video/film/assets/music-src.mp3`：Pixabay「Corporate Explainer Video」（alex-morgan，曲目編號 568180，Pixabay Content License）。字型用思源黑體（SIL Open Font License），`build_film.py` 會從 `~/Library/Fonts` 取出用到的字。
+
 ## 提示文字（附在所有給飼主的健康相關內容）
 
 照護計畫訊息附完整提示文字：
@@ -174,5 +193,6 @@ vetloop/
   templates/     Jinja 模板
   static/        原生 JS／CSS；demo/vomit.png 是示範照片
 tests/           unittest
+video/           介紹影片的錄影、剪輯與渲染腳本
 docs/screenshots/  README 用的截圖
 ```

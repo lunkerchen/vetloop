@@ -12,6 +12,7 @@ AIforPets 2027「獸醫照護」主題的可操作 Prototype。獸醫在環：AI
 - [x] C1｜gpt-6.1-sol（Codex，唯讀）｜唯讀｜大型改動的獨立驗收｜第 8 次通過（第 6 次缺口由 T3 補上，第 7 次 P1 主控已修）
 - [x] T3｜implementer（Sonnet 5.5）｜vetloop/db.py、vetloop/flows.py、vetloop/guardrail.py、vetloop/app.py、vetloop/templates/、vetloop/static/（demo/ 除外）、tests/、README.md｜見「T3 照護中修改醫囑」｜完成
 - [x] R2｜reviewer（Opus 5.5）｜唯讀｜逐條判定 T3 驗收與「規定紅線」｜通過（無必修；應修 1–3 由主控補，見「R2 後主控補充」）
+- [x] T4｜Opus 5.5（主控）｜video/、README.md「介紹影片」、proposal/deck.html 第 08 頁第三方資源｜片長 ≤ 2:00、無旁白、實機錄影；字卡用簡報第 03 頁流程用字；畫面常駐「模擬案例」；片尾完整提示文字；字卡與入鏡 AI 產出無病名、疑似、診斷、劑量建議、品牌；配樂與字型揭露｜完成（reviewer 9 條中 8 條通過，必修「1.5× 加速未標示」已修；建議項的片尾停留、字卡時機、殘影已修。未做 GPT 驗收：交付物是影片，Codex 唯讀沙箱無法抽格。使用者決定後主控改 app：「系統紀錄」標題拿掉 LINE、緊急固定話術寄件人改「系統」（vetloop/flows.py、vetloop/templates/phone.html、tests/），已重錄並重新渲染）
 
 ## 共通規則
 
