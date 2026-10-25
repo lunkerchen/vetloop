@@ -457,8 +457,8 @@ class EmergencyTest(FlowTest):
         """驗收：緊急字眼 -> 固定話術、建 alert、llm_call 沒被呼叫。"""
         flows.owner_message(self.conn, 1, "牠剛剛好像吞了一段繩子")
         self.assertEqual(self.fake.calls, [])
-        ai = self.messages("ai")
-        self.assertEqual([m["text"] for m in ai], [
+        self.assertEqual(self.messages("ai"), [])
+        self.assertEqual([m["text"] for m in self.messages("system")], [
             "這個狀況需要盡快處理，請立即致電示範動物醫院：02-0000-0000。我已經通知醫院櫃台。"])
         alerts = self.conn.execute("SELECT * FROM alerts").fetchall()
         self.assertEqual([a["text"] for a in alerts], ["麻糬（林小姐）：牠剛剛好像吞了一段繩子"])
@@ -473,7 +473,9 @@ class EmergencyTest(FlowTest):
         self.assertEqual(self.fake.calls, [])
         self.assertEqual(len(self.conn.execute("SELECT * FROM alerts").fetchall()), 4)
         self.assertEqual(self.drafts(), [])
-        self.assertEqual(self.messages("system"), [])
+        # 只有 4 則緊急固定話術，沒有其他系統回條
+        self.assertEqual([m["text"] for m in self.messages("system")],
+                         ["這個狀況需要盡快處理，請立即致電示範動物醫院：02-0000-0000。我已經通知醫院櫃台。"] * 4)
 
     def test_empty_message_rejected(self):
         with self.assertRaises(ValueError):
