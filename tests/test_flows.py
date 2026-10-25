@@ -936,14 +936,14 @@ class InCareTest(FlowTest):
         self.make_in_care()
         before = len(self.messages())
         self.use(reply={"change_summary": "飼主回報吃藥後又吐了一次。",
-                        "reply": "收到，已轉給王醫師，請問吐完之後有喝水嗎？", "confidence": 0.8})
+                        "reply": "收到，我知道了。請問吐完之後有喝水嗎？", "confidence": 0.8})
         flows.owner_message(self.conn, 1, "吃完藥又吐了一次")
         new = self.messages()[before:]
         self.assertEqual([(m["sender"], m["text"]) for m in new], [
             ("owner", "吃完藥又吐了一次"), ("system", "收到，我會整理給王醫師，醫師確認後回覆您。")])
         draft = self.drafts("reply")[0]
         self.assertEqual((draft["status"], draft["summary"], draft["body"]),
-                         ("pending", "飼主回報吃藥後又吐了一次。", "收到，已轉給王醫師，請問吐完之後有喝水嗎？"))
+                         ("pending", "飼主回報吃藥後又吐了一次。", "收到，我知道了。請問吐完之後有喝水嗎？"))
         self.assertEqual(json.loads(draft["flags"]), [])
         user = json.loads(self.fake.calls[0]["user"])
         self.assertEqual(user["care_plan"]["order"]["meds"][0]["name"], "示範藥A")
