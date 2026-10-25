@@ -25,7 +25,7 @@ flowchart TD
 
 ### 1. 飼主問診
 
-飼主在手機上描述狀況。系統用固定問句補齊 8 個欄位，照片可以一起傳。整理完成後，飼主按「正確，送出」。右邊的「系統紀錄」面板是示意用的，飼主在 LINE 上看不到。
+飼主在手機上描述狀況。系統用固定問句補齊 8 個欄位，照片可以一起傳。整理完成後，飼主按「正確，送出」。右邊的「系統紀錄」面板是示意用的，飼主端看不到。
 
 <img src="docs/screenshots/01-owner-intake.png" width="560" alt="飼主問診：手機聊天畫面與系統紀錄面板">
 
@@ -103,7 +103,7 @@ python3.12 -m venv .venv
 
 ## Demo 腳本（建議錄影順序）
 
-視窗並排：左邊 `/phone/1`（飼主；右側「系統紀錄」面板是示意用的，飼主在 LINE 上看不到，會逐格打勾），右邊 `/clinic`（醫院後台）。
+視窗並排：左邊 `/phone/1`（飼主；右側「系統紀錄」面板是示意用的，飼主端看不到，會逐格打勾），右邊 `/clinic`（醫院後台）。
 
 1. **飼主問診**：在麻糬的手機傳「麻糬今天一直在吐」，系統用固定問句追問開始時間與次數（第一次回覆開頭固定是「收到，我幫您整理給醫院。想先確認：」）。
 2. 回答「從昨天晚上開始，吐了三次」，並按「附上示範照片」：這會把 `vetloop/static/demo/vomit.png` 放進附件（輸入框上方出現縮圖），再按「送出」一起送出；也可用旁邊的圖示從檔案選。AI 只描述看得到的顏色與形狀，寫進「照片描述」；這段描述沒有經過獸醫核可，所以只出現在醫院端，飼主端（聊天室與系統紀錄面板）只看到「已收到照片」。
@@ -118,6 +118,25 @@ python3.12 -m venv .venv
 11. **（選用）照護中修改醫囑**：獸醫看完回報，決定換藥或改次數時，不能在追蹤回覆裡寫「停藥」「改成每天一次」（核可時會被擋下，提示改用「修改醫囑」）。到後台案例頁，醫囑區塊下方展開「修改醫囑」，表單預填現行醫囑；例如藥名改「示範藥B」、每日 1 次、3 天，按「產生新的照護計畫」。案例列表與案例頁的標籤變成「照護中・新醫囑待核可」；核可之前飼主端沒有任何變化，提醒仍照舊醫囑送。在計畫區塊按「核可並送出」後，手機收到「這是王醫師更新後的醫囑」加完整提示文字；舊版還沒送出的提醒取消，改照新醫囑重新排程，已送出的提醒不受影響、按鈕照常能按。
 12. **緊急情境**：在豆豆的手機傳「牠剛剛好像吞了一段繩子」。飼主立刻收到固定話術（請立即致電醫院），不經 AI；後台「緊急通知」整塊轉紅，按「知道了」標為已讀。
 13. 錄完用「重設示範資料」回到起點。
+
+## 介紹影片（`video/`）
+
+參賽用的介紹影片（約 1 分 59 秒，無旁白）是用上面的 Demo 腳本實機錄出來的，步驟 11（修改醫囑）沒有入鏡。重做流程：
+
+```sh
+# 1. 另開終端起 app（埠號 5051），重設示範資料後錄影；會呼叫真的 Claude CLI
+cd video && npm install && npx playwright install chromium
+node record.mjs raw
+# 2. 影格轉成片段與時間軸
+python3 build_clips.py raw film/assets
+# 3. 產生 HyperFrames 合成檔（剪輯表、鏡頭、字卡都在 build_film.py）並渲染
+python3 build_film.py
+(cd film && npx --yes hyperframes@0.8.198 render --video-frame-format png -o ../renders/silent.mp4)
+# 4. 混入配樂，輸出 renders/VetLoop-intro.mp4
+sh finish.sh
+```
+
+配樂需另外放到 `video/film/assets/music-src.mp3`：Pixabay「Corporate Explainer Video」（alex-morgan，曲目編號 568180，Pixabay Content License）。字型用思源黑體（SIL Open Font License），`build_film.py` 會從 `~/Library/Fonts` 取出用到的字。
 
 ## 提示文字（附在所有給飼主的健康相關內容）
 
@@ -174,5 +193,6 @@ vetloop/
   templates/     Jinja 模板
   static/        原生 JS／CSS；demo/vomit.png 是示範照片
 tests/           unittest
+video/           介紹影片的錄影、剪輯與渲染腳本
 docs/screenshots/  README 用的截圖
 ```

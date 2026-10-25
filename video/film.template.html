@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>VetLoop 介紹影片</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <!-- 由 build_film.py 產生 index.html，請改這份樣板或產生器 -->
+    <style>
+      @font-face { font-family: "SHS"; src: url(assets/fonts/shs-Regular.otf); font-weight: 400; }
+      @font-face { font-family: "SHS"; src: url(assets/fonts/shs-Medium.otf); font-weight: 500; }
+      @font-face { font-family: "SHS"; src: url(assets/fonts/shs-Bold.otf); font-weight: 700; }
+      :root {
+        --red: #D7263D; --red-dark: #B01E31; --red-soft: #FDECEE;
+        --ink: #1B1F24; --muted: #667085; --line: #E4E7EC; --soft: #F7F8FA;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: #fff; }
+      #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: #fff;
+        font-family: "SHS", sans-serif; color: var(--ink); }
+      .clip { position: absolute; }
+
+      /* 舞台 */
+      .stage { position: absolute; left: 680px; top: 40px; width: 1200px; height: 1000px; opacity: 0; }
+      .stage .vp { position: absolute; inset: 0; overflow: hidden; }
+      .stage.win { border-radius: 18px; background: #fff; box-shadow: 0 0 0 1px var(--line), 0 24px 60px rgba(16, 24, 40, .12); overflow: hidden; }
+      .stage.win .vp { top: 44px; }
+      .chrome { position: absolute; left: 0; right: 0; top: 0; height: 44px; background: var(--soft);
+        border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 8px; padding: 0 18px; }
+      .chrome i { width: 12px; height: 12px; border-radius: 50%; background: #D0D5DD; }
+      .chrome span { margin-left: 14px; font-size: 16px; color: var(--muted); }
+      .cam { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+      .vid { position: absolute; left: 0; top: 0; }
+      .cover { position: absolute; left: 1000px; top: 0; width: 920px; height: 2160px; background: #fff; opacity: 0; z-index: 1; }
+      .stage:not(.win) .vp { -webkit-mask-image: linear-gradient(to right, transparent, #000 32px, #000 calc(100% - 32px), transparent),
+          linear-gradient(to bottom, transparent, #000 32px, #000 calc(100% - 32px), transparent);
+        -webkit-mask-composite: source-in; mask-composite: intersect; }
+
+      /* 左欄 */
+      #ui { left: 96px; top: 0; width: 540px; height: 1080px; }
+      .brand { position: absolute; top: 64px; display: flex; align-items: center; gap: 12px; font-size: 30px; font-weight: 700; }
+      .brand span { font-size: 20px; font-weight: 400; color: var(--muted); margin-left: 6px; }
+      .ring { width: 28px; height: 28px; border-radius: 50%; border: 5px solid var(--red); border-right-color: transparent; transform: rotate(-35deg); }
+      .badge { position: absolute; top: 122px; font-size: 18px; font-weight: 500; color: var(--red-dark);
+        background: var(--red-soft); border-radius: 999px; padding: 6px 16px; }
+      .pills { position: absolute; top: 816px; display: flex; gap: 8px; }
+      .pills b { display: block; min-width: 56px; text-align: center; font-size: 20px; font-weight: 700; padding: 6px 10px;
+        border-radius: 999px; border: 1.5px solid var(--line); color: #667085; background: #fff; }
+      .foot { position: absolute; top: 920px; width: 540px; font-size: 17px; line-height: 1.6; color: #667085; }
+      .tag { left: 96px; top: 262px; font-size: 20px; font-weight: 500; color: var(--muted); letter-spacing: .08em; }
+      .step { left: 96px; top: 300px; width: 540px; }
+      .step .num { font-size: 96px; font-weight: 700; line-height: 1; color: var(--red); letter-spacing: -.02em; }
+      .step h2 { margin-top: 20px; font-size: 52px; font-weight: 700; line-height: 1.28; }
+      .step h2 span { display: block; }
+      .step.urgent .num { width: 96px; height: 96px; border-radius: 50%; background: var(--red); color: #fff; font-size: 64px;
+        display: grid; place-items: center; }
+      .desc { left: 96px; top: 594px; width: 520px; font-size: 30px; line-height: 1.6; color: #475467; text-wrap: pretty; }
+      .chip { right: 60px; bottom: 60px; transform-origin: 100% 100%;
+        font-size: 20px; font-weight: 500; color: #fff; background: rgba(27, 31, 36, .78); border-radius: 999px; padding: 8px 18px; white-space: nowrap; }
+
+      /* 全畫面字卡 */
+      .card { inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+      #hook .h1 { font-size: 76px; font-weight: 700; }
+      #hook .h2 { margin-top: 28px; font-size: 40px; color: #475467; }
+      .logo { display: flex; align-items: center; gap: 28px; }
+      .logo span { font-size: 132px; font-weight: 700; letter-spacing: -.02em; }
+      .mark { width: 120px; height: 120px; }
+      #title .sub, #end .sub { margin-top: 18px; font-size: 48px; font-weight: 500; }
+      .tagline { margin-top: 46px; font-size: 36px; color: #475467; display: flex; align-items: center; gap: 22px; }
+      .tagline i { width: 10px; height: 10px; border-radius: 50%; background: var(--red); }
+      .meta { position: absolute; bottom: 90px; font-size: 24px; color: var(--muted); }
+      #recap .kicker { font-size: 26px; font-weight: 700; color: var(--red); letter-spacing: .2em; }
+      #recap .head { margin-top: 16px; font-size: 56px; font-weight: 700; }
+      .cards { margin-top: 64px; display: flex; gap: 32px; }
+      .cards > div { width: 470px; padding: 40px 36px; border-radius: 20px; background: var(--soft); text-align: left; }
+      .cards b { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: var(--red);
+        color: #fff; font-size: 28px; }
+      .cards h3 { margin-top: 24px; font-size: 36px; font-weight: 700; }
+      .cards p { margin-top: 14px; font-size: 28px; line-height: 1.6; color: #475467; text-wrap: pretty; }
+      .proof { margin-top: 56px; font-size: 24px; color: var(--muted); }
+      #end .logo span { font-size: 112px; }
+      #end .mark { width: 100px; height: 100px; }
+      .links { margin-top: 34px; font-size: 30px; font-weight: 500; color: #344054; }
+      .legal { margin-top: 56px; width: 1300px; padding: 26px 36px; border-radius: 16px; background: var(--soft);
+        font-size: 26px; line-height: 1.7; color: #475467; text-align: left; }
+      .credit { margin-top: 30px; font-size: 20px; line-height: 1.8; color: #667085; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-width="1920" data-height="1080" data-duration="{{TOTAL}}">
+{{BODY}}
+    </div>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+{{JS}}
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

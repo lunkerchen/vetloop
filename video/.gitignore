@@ -1,0 +1,12 @@
+node_modules/
+raw/
+clips/
+renders/
+# 錄影片段、時間軸、配樂、字型都由腳本產生或下載，不進版控
+film/assets/
+film/.hyperframes/
+film/index.html
+# hyperframes init 產生的代理說明
+film/AGENTS.md
+film/CLAUDE.md
+__pycache__/

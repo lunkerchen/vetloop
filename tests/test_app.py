@@ -298,8 +298,9 @@ class EmergencyTest(AppTest):
         self.assertEqual(data["alerts"][0]["text"], "豆豆（陳先生）：牠剛剛好像吞了一段繩子")
         self.assertEqual(data["alerts"][0]["case_id"], 2)
         self.assertFalse(data["alerts"][0]["seen"])
-        ai = r.get_json()["messages"][-1]
-        self.assertIn("請立即致電示範動物醫院：02-0000-0000", ai["text"])
+        reply = r.get_json()["messages"][-1]
+        self.assertIn("請立即致電示範動物醫院：02-0000-0000", reply["text"])
+        self.assertEqual(reply["sender"], "system")  # 固定話術不標成 AI
         # 緊急通知面板：頁面一開始就帶著通知，不用等第一次輪詢
         self.assertEqual(self.boot(self.get_ok("/clinic"))["unseen"], 1)
         # 看過就標成已讀
@@ -651,7 +652,7 @@ class C1Round3Test(AppTest):
 
     def test_phone_panel_is_labelled_as_a_system_log(self):
         html = self.get_ok("/phone/1")
-        self.assertIn("系統紀錄（示意，飼主在 LINE 上看不到）", html)
+        self.assertIn("系統紀錄（示意，飼主端看不到）", html)
         self.assertNotIn("<h2>問診欄位</h2>", html)
 
     def test_photo_description_never_reaches_the_owner(self):

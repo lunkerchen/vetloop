@@ -245,7 +245,7 @@ def owner_message(conn, case_id, text, image_path=None):
     conn.commit()
 
     if guardrail.is_emergency(text):  # 任何狀態都先擋這一關，不經 LLM
-        _say(conn, case_id, "ai",
+        _say(conn, case_id, "system",  # 固定話術，畫面上標成「系統」而不是 AI
              f"這個狀況需要盡快處理，請立即致電{case['clinic_name']}：{case['clinic_phone']}。"
              "我已經通知醫院櫃台。")
         conn.execute("INSERT INTO alerts(case_id, text, created_at) VALUES(?,?,?)",
