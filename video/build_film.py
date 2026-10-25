@@ -156,6 +156,8 @@ def build():
         if rate >= 4 and (b - a) / rate > WAIT_CAP:
             rate = math.ceil((b - a) / WAIT_CAP)
             chip = f"快轉 {rate}×"
+        if rate > 1 and (b - a) / rate < 0.6:   # 短到放不下快轉標示，就用原速播
+            rate, chip = 1, None
         dur = (b - a) / rate
         assert dur > 0, (i, a, b)
         vids.append(dict(id=f"s{i}", page=page, start=t, dur=dur, ms=a, rate=rate))

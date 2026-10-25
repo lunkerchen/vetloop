@@ -9,7 +9,8 @@ import path from 'node:path';
 const BASE = process.env.VETLOOP_URL || 'http://127.0.0.1:5051';
 const OUT = path.resolve(process.argv[2] || 'raw');
 const AI_TIMEOUT = 150_000; // 每次 LLM 約 5–12 秒，含一次重試仍遠低於此
-fs.rmSync(OUT, { recursive: true, force: true });
+// 只清掉這支腳本自己產生的東西，輸出目錄給錯也不會誤刪別的檔案
+for (const n of ['phone1', 'clinic', 'phone2', 'events.json', 'texts.json']) fs.rmSync(path.join(OUT, n), { recursive: true, force: true });
 fs.mkdirSync(OUT, { recursive: true });
 
 const events = [];
@@ -191,6 +192,8 @@ try {
   await pause(clinic, 2500);
 
   // 4. 核可，飼主收到醫囑
+  // 護欄有提醒時按鈕會跳 confirm()，Playwright 預設按取消；示範要乾淨的一輪，直接失敗重錄
+  if (await clinic.page.locator('#plan form[data-confirm]').count()) throw new Error('照護計畫有護欄提醒，請重錄');
   const phoneBefore = await rows(phone);
   await click(clinic, clinic.page.locator('#plan button', { hasText: '核可並送出' }));
   await mark(clinic, 'plan:approved');
@@ -231,6 +234,7 @@ try {
   await ta.pressSequentially('今晚若再吐，請直接來電。', { delay: 80 });
   await pause(clinic, 900);
   await mark(clinic, 'queue:edited', 'form.pane.edit');
+  if (await clinic.page.locator('form.pane.edit[data-confirm]').count()) throw new Error('回覆草稿有護欄提醒，請重錄');
   const beforeReply = await rows(phone);
   await click(clinic, clinic.page.locator('form.pane.edit button', { hasText: '核可並送出' }));
   await mark(clinic, 'queue:approved');
