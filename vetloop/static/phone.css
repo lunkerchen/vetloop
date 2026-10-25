@@ -1,0 +1,137 @@
+/* 飼主手機畫面（仿 LINE 的聊天樣式，不使用其商標） */
+.stage {
+  display: grid; grid-template-columns: 1fr 440px 1fr; column-gap: 56px; align-items: start;
+  min-height: 100vh; padding: 68px 32px 28px;
+}
+.phone {
+  grid-column: 2; position: relative; display: flex; flex-direction: column; overflow: hidden;
+  width: 440px; max-width: 100%; height: min(900px, calc(100vh - 96px)); min-height: 560px;
+  background: #fff; border: 10px solid #1d2128; border-radius: 46px;
+  box-shadow: 0 34px 70px rgba(16, 24, 40, .24), 0 0 0 2px #3a4048;
+}
+.phone::before { /* 瀏海 */
+  content: ""; position: absolute; top: 0; left: 50%; z-index: 4; width: 124px; height: 22px; transform: translateX(-50%);
+  background: #1d2128; border-radius: 0 0 16px 16px;
+}
+.phone-top { display: flex; align-items: center; gap: 12px; padding: 32px 20px 14px; background: var(--green); color: #fff; }
+.avatar {
+  display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%;
+  background: #fff; color: var(--green); font-weight: 800; font-size: 20px;
+}
+.clinic-name { font-size: 20px; font-weight: 700; line-height: 1.25; }
+.clinic-sub { font-size: 14px; opacity: .9; }
+
+.chat { flex: 1; overflow-y: auto; padding: 16px 14px 12px; background: #E8EDF2; }
+.day-pill { width: max-content; margin: 0 auto 14px; padding: 2px 14px; border-radius: 999px; background: rgba(27, 31, 36, .22); color: #fff; font-size: 13px; }
+.row { display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 14px; }
+.row.owner { align-items: flex-end; }
+.who { margin: 0 0 3px 6px; color: #5a6472; font-size: 13px; }
+.row.vet .who { color: var(--red); font-weight: 700; }
+.line { display: flex; align-items: flex-end; gap: 6px; max-width: 100%; }
+.row.owner .line { flex-direction: row-reverse; }
+.time { flex: none; color: #667085; font-size: 12px; }
+.bubble {
+  max-width: 320px; padding: 10px 14px; border-radius: 18px; background: #fff; font-size: 17px; line-height: 1.55;
+  overflow-wrap: anywhere; box-shadow: 0 1px 2px rgba(16, 24, 40, .08);
+}
+.row.owner .bubble { background: #BDEBAA; border-bottom-right-radius: 6px; }
+.row.ai .bubble { border-bottom-left-radius: 6px; }
+.row.vet .bubble { border-left: 5px solid var(--red); border-bottom-left-radius: 6px; }
+.row.system .bubble { background: #F3F4F6; color: #475467; font-size: 15px; border-bottom-left-radius: 6px; }
+.text > div { white-space: pre-wrap; }
+.text .note { margin-top: 8px; padding-top: 8px; border-top: 1px dashed #D0D5DD; color: #55606e; font-size: 14px; line-height: 1.5; }
+.photo { display: block; width: 100%; max-width: 230px; margin-bottom: 8px; border-radius: 12px; }
+.photo:last-child { margin-bottom: 0; }
+
+.quick { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 0 4px; }
+.chip {
+  padding: 8px 18px; border: 1.5px solid var(--green); border-radius: 999px; background: #fff; color: var(--green);
+  font-size: 16px; font-weight: 700; transition: background .15s, color .15s;
+}
+.chip.primary { background: var(--green); color: #fff; }
+.chip:hover:not(:disabled) { background: var(--green-dark); border-color: var(--green-dark); color: #fff; }
+.chip:disabled { border-color: #D0D5DD; background: #F2F4F7; color: #98A2B3; cursor: default; }
+
+.typing { display: flex; align-items: center; gap: 10px; color: #667085; font-size: 15px; }
+.dots { display: inline-flex; gap: 4px; }
+.dots i { width: 7px; height: 7px; border-radius: 50%; background: #98A2B3; animation: bounce 1s ease-in-out infinite; }
+.dots i:nth-child(2) { animation-delay: .15s; }
+.dots i:nth-child(3) { animation-delay: .3s; }
+@keyframes bounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-5px); } }
+
+.toast {
+  position: absolute; left: 14px; right: 14px; bottom: 132px; z-index: 5; padding: 10px 14px; border-radius: 12px;
+  background: var(--red); color: #fff; font-size: 15px; box-shadow: 0 8px 20px rgba(215, 38, 61, .35);
+}
+
+.composer { background: #fff; border-top: 1px solid var(--line); padding: 10px 12px 14px; }
+.attach-chip { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; padding: 6px 8px; border-radius: 12px; background: var(--soft); font-size: 14px; }
+.attach-chip img { width: 40px; height: 40px; object-fit: cover; border-radius: 8px; }
+.attach-chip span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.attach-chip button { width: 28px; height: 28px; border: 0; border-radius: 50%; background: #E4E7EC; font-size: 18px; line-height: 1; }
+.tools { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.tool { display: grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 12px; background: var(--soft); color: #475467; }
+.tool:hover { background: var(--green-soft); color: var(--green); }
+.demo-photo {
+  padding: 4px 12px; border: 1.5px solid var(--red); border-radius: 999px; background: #fff;
+  color: var(--red); font-size: 14px; font-weight: 700;
+}
+.demo-photo:hover:not(:disabled) { background: var(--red); color: #fff; }
+.entry { display: flex; gap: 8px; }
+.entry input {
+  flex: 1; min-width: 0; padding: 10px 16px; border: 0; border-radius: 22px; background: #F2F4F7; font-size: 17px;
+}
+.entry input::placeholder { color: #98A2B3; }
+.send { padding: 0 20px; border: 0; border-radius: 22px; background: var(--green); color: #fff; font-size: 17px; font-weight: 700; }
+.send:hover:not(:disabled) { background: var(--green-dark); }
+.composer :disabled { opacity: .5; cursor: not-allowed; }
+
+/* 問診欄位面板 */
+.intake-panel {
+  grid-column: 3; justify-self: start; width: min(440px, 100%); margin-top: 8px; padding: 26px 28px 28px;
+  border: 1.5px solid var(--line); border-radius: 22px; background: #fff; box-shadow: 0 12px 30px rgba(16, 24, 40, .06);
+}
+.panel-head { display: flex; align-items: baseline; justify-content: space-between; }
+.panel-head h2 { font-size: 26px; }
+.count { color: var(--muted); font-weight: 700; }
+.bar { height: 8px; margin: 12px 0 10px; border-radius: 99px; background: var(--line); overflow: hidden; }
+.bar div { height: 100%; width: 0; border-radius: 99px; background: var(--green); transition: width .4s ease; }
+.phase { color: var(--muted); font-size: 16px; }
+.phase strong { color: var(--ink); }
+.fields { list-style: none; margin: 14px 0 0; padding: 0; }
+.fields li {
+  display: grid; grid-template-columns: 28px 84px 1fr; align-items: center; gap: 10px;
+  padding: 9px 8px; margin: 0 -8px; border-radius: 10px; border-bottom: 1px solid var(--line);
+}
+.fields li:last-child { border-bottom: 0; }
+.mark { width: 26px; height: 26px; border: 2px solid #D0D5DD; border-radius: 50%; position: relative; }
+.fields .label { color: var(--muted); font-size: 16px; }
+.fields .value { color: #98A2B3; font-size: 17px; }
+.fields li.done .mark { border-color: var(--green); background: var(--green); }
+.fields li.done .mark::after {
+  content: ""; position: absolute; left: 7px; top: 3px; width: 6px; height: 11px;
+  border: solid #fff; border-width: 0 2.5px 2.5px 0; transform: rotate(45deg);
+}
+.fields li.done .label { color: var(--ink); font-weight: 700; }
+.fields li.done .value { color: var(--ink); font-weight: 500; overflow-wrap: anywhere; }
+.fields li.fresh { animation: fresh 1.6s ease-out; }
+@keyframes fresh { from { background: var(--green-soft); } to { background: transparent; } }
+.photo-card { margin-top: 18px; padding: 16px 18px; border-radius: 14px; background: var(--soft); }
+.photo-card h3 { font-size: 18px; }
+.photo-card img { display: block; width: 100%; max-height: 180px; margin-top: 10px; border-radius: 10px; object-fit: cover; }
+.photo-desc { margin-top: 8px; font-size: 17px; }
+.photo-desc.empty { color: #98A2B3; }
+
+@media (max-width: 1100px) {
+  .stage { display: flex; flex-direction: column; align-items: center; gap: 28px; }
+  .phone { grid-column: auto; }
+  .intake-panel { grid-column: auto; justify-self: auto; }
+}
+@media (max-width: 520px) { /* 真的手機：聊天畫面撐滿，不畫手機外框 */
+  .stage { padding: 44px 0 0; gap: 20px; }
+  .phone { width: 100%; height: calc(100dvh - 44px); min-height: 480px; border: 0; border-radius: 0; box-shadow: none; }
+  .phone::before { display: none; }
+  .phone-top { padding-top: 16px; }
+  .bubble { max-width: 76vw; }
+  .intake-panel { width: calc(100% - 24px); margin-bottom: 24px; }
+}

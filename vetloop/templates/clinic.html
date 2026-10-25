@@ -1,0 +1,47 @@
+{% extends "clinic_base.html" %}
+{% block title %}案例列表{% endblock %}
+{% block main %}
+<div class="list-grid" id="clinic-list">
+  <div class="stack">
+    <section class="card">
+      <div class="card-head"><h2>案例列表</h2></div>
+      <table class="cases">
+        <thead><tr><th>寵物</th><th>飼主</th><th>狀態</th><th>最後訊息</th><th></th></tr></thead>
+        <tbody>
+          {% for c in cases %}
+          <tr>
+            <td><strong>{{ c.pet_name }}</strong> <span class="muted">{{ c.species }}</span></td>
+            <td>{{ c.owner_name }}</td>
+            <td><span class="badge s-{{ c.status }}" data-status-for="{{ c.id }}">{{ c.status_label }}</span></td>
+            <td class="muted">{{ c.last }}</td>
+            <td class="actions">
+              <a class="btn small primary" href="{{ url_for('clinic_case', case_id=c.id) }}">開啟案例</a>
+              <a class="btn small" href="{{ url_for('phone', case_id=c.id) }}" target="_blank" rel="noopener">飼主手機</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+    <div class="two">
+      <a class="card stat" href="{{ url_for('queue') }}">
+        <span class="stat-num" data-pending-num>{{ pending }}</span>
+        <span class="stat-label">待審回覆<small>飼主照護期間傳來、等醫師核可的訊息</small></span>
+      </a>
+      <section class="card reset-card">
+        <h3>示範資料</h3>
+        <p class="muted">清空所有對話、醫囑與提醒，回到兩個全新的模擬案例。</p>
+        <form action="{{ url_for('reset') }}" method="post" data-async data-busy="重設中…" data-confirm="確定要重設示範資料？所有對話與醫囑都會被清除。">
+          <p class="form-error" hidden></p>
+          <button type="submit" class="btn">重設示範資料</button>
+        </form>
+      </section>
+    </div>
+  </div>
+  <section class="alerts" id="alerts" aria-live="assertive">
+    <div class="alerts-head"><h2>緊急通知</h2><span class="count" id="alert-count" hidden></span></div>
+    <div id="alert-list"></div>
+  </section>
+</div>
+<script type="application/json" id="boot">{{ boot|tojson }}</script>
+{% endblock %}

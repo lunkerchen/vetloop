@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}選擇畫面{% endblock %}
+{% block body_class %}home{% endblock %}
+{% block body %}
+<main class="home-main">
+  <div class="logo"><i></i>VetLoop</div>
+  <h1>獸醫在環的照護 Prototype</h1>
+  <p class="lead">AI 起草，獸醫核可，飼主照做。以下全部是模擬案例與虛構的醫院、醫師，不是真實的診療資料。</p>
+  <div class="home-cards">
+    {% for c in cases %}
+    <a class="home-card" href="{{ url_for('phone', case_id=c.id) }}">
+      <span class="kicker">飼主手機畫面</span>
+      <strong>{{ c.pet_name }}的手機</strong>
+      <span class="muted">{{ c.owner_name }} · {{ c.species }}</span>
+    </a>
+    {% endfor %}
+    <a class="home-card clinic" href="{{ url_for('clinic') }}">
+      <span class="kicker">電腦版</span>
+      <strong>醫院後台</strong>
+      <span class="muted">{{ cases[0].clinic_name if cases else '示範動物醫院' }} · {{ cases[0].vet_name if cases else '王醫師' }}</span>
+    </a>
+  </div>
+  <p class="foot-note">本機示範，沒有登入機制，請勿對外開放。</p>
+</main>
+{% endblock %}

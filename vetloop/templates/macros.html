@@ -1,0 +1,27 @@
+{# 醫囑原文：照獸醫填的內容原樣顯示 #}
+{% macro order_view(o) %}
+<div class="order-view">
+  <h4>用藥</h4>
+  <ul>
+    {% for m in o.meds %}
+    <li><strong>{{ m.name }}</strong>　每日 {{ m.times_per_day }} 次{% if m.timing %}，{{ m.timing }}{% endif %}，連續 {{ m.days }} 天</li>
+    {% endfor %}
+  </ul>
+  {% if o.diet.text %}<h4>飲食</h4><p>{{ o.diet.text }}{% if o.diet.days %}（{{ o.diet.days }} 天）{% endif %}</p>{% endif %}
+  {% if o.recheck_days %}<h4>回診</h4><p>{{ o.recheck_days }} 天後回診</p>{% endif %}
+  {% if o.watch %}<h4>觀察重點</h4><p>{{ o.watch }}</p>{% endif %}
+  {% if o.note %}<h4>補充</h4><p>{{ o.note }}</p>{% endif %}
+</div>
+{% endmacro %}
+
+{# 護欄檢查結果：有項目就醒目標紅，沒有就顯示通過。id 固定，方便測試與錄影對照 #}
+{% macro guardrail_box(flags, dom_id='guardrail', ok_text='通過：藥名都有出現、劑量與醫囑一致，沒有病名、診斷用語或嚴重度分級。') %}
+<div class="guardrail {{ 'warn' if flags else 'ok' }}" id="{{ dom_id }}">
+  <div class="g-title">護欄檢查</div>
+  {% if flags %}
+  <ul>{% for f in flags %}<li>{{ f }}</li>{% endfor %}</ul>
+  {% else %}
+  <p>{{ ok_text }}</p>
+  {% endif %}
+</div>
+{% endmacro %}

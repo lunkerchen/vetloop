@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='clinic.css') }}">{% endblock %}
+{% block body_class %}clinic-page{% endblock %}
+{% block body %}
+<header class="topbar">
+  <a class="logo" href="{{ url_for('index') }}"><i></i>VetLoop</a>
+  <span class="clinic-title">示範動物醫院　後台</span>
+  <nav>
+    <a href="{{ url_for('clinic') }}" class="{{ 'on' if request.endpoint in ('clinic', 'clinic_case') }}">案例列表</a>
+    <a href="{{ url_for('queue') }}" class="{{ 'on' if request.endpoint == 'queue' }}">待審佇列<span class="pending-badge" data-pending {% if not pending %}hidden{% endif %}>{{ pending }}</span></a>
+  </nav>
+</header>
+<main class="content">
+{% block main %}{% endblock %}
+</main>
+<button type="button" class="update-pill" id="update-pill" hidden>有新動態，點此更新</button>
+<script src="{{ url_for('static', filename='clinic.js') }}"></script>
+{% endblock %}

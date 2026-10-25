@@ -1,0 +1,184 @@
+{% extends "clinic_base.html" %}
+{% from "macros.html" import order_view, guardrail_box %}
+{% set vet = case.vet_name %}
+{% macro med_row(m) %}
+<div class="med-row">
+  <label class="f-name">藥名<input name="med_name" value="{{ m.name }}" maxlength="200" autocomplete="off"></label>
+  <label class="f-times">每日次數<select name="med_times">{% for n in (1, 2, 3) %}<option value="{{ n }}" {{ 'selected' if m.times_per_day == n }}>{{ n }} 次</option>{% endfor %}</select></label>
+  <label class="f-timing">時機<input name="med_timing" value="{{ m.timing }}" maxlength="200" placeholder="例如：飯後" autocomplete="off"></label>
+  <label class="f-days">天數<input type="number" name="med_days" min="1" max="60" value="{{ m.days }}"></label>
+  <button type="button" class="icon-btn" data-remove title="移除這筆用藥" aria-label="移除這筆用藥">×</button>
+</div>
+{% endmacro %}
+{% macro order_form(o, label, extra) %}
+  <form action="{{ url_for('post_order', case_id=case.id) }}" method="post" data-async data-busy="AI 產生照護計畫中…">
+    <h3 class="f-title">用藥</h3>
+    <div id="meds">
+      {% for m in (o.meds if o else [{'name': '', 'times_per_day': 2, 'timing': '', 'days': 5}]) %}{{ med_row(m) }}{% endfor %}
+    </div>
+    <template id="med-tpl">{{ med_row({'name': '', 'times_per_day': 2, 'timing': '', 'days': 5}) }}</template>
+    <button type="button" class="btn small" id="add-med">＋ 新增一筆用藥</button>
+    <div class="f-row">
+      <label class="grow">飲食<input name="diet_text" value="{{ o.diet.text if o else '' }}" maxlength="200" autocomplete="off"></label>
+      <label class="narrow">飲食天數<input type="number" name="diet_days" min="0" max="60" value="{{ o.diet.days if o else 0 }}"></label>
+      <label class="narrow">回診（幾天後）<input type="number" name="recheck_days" min="0" max="60" value="{{ o.recheck_days if o else 0 }}"></label>
+    </div>
+    <label class="block">觀察重點<textarea name="watch" rows="2" maxlength="200">{{ o.watch if o else '' }}</textarea></label>
+    <label class="block">補充
+      <span class="with-mic">
+        <textarea name="note" id="note" rows="2" maxlength="200">{{ o.note if o else '' }}</textarea>
+        <button type="button" class="mic" id="mic" hidden aria-label="用語音輸入補充" title="語音輸入（國語）">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+        </button>
+      </span>
+    </label>
+    <p class="form-error" hidden></p>
+    <button type="submit" class="btn primary big">{{ label }}</button>
+    <p class="hint">AI 只把醫囑改寫成白話步驟，不會新增藥物或劑量；產生後要由{{ vet }}核可才會送給飼主。{{ extra }}</p>
+  </form>
+{% endmacro %}
+{% block title %}{{ case.pet_name }}的案例{% endblock %}
+{% block main %}
+<div id="case-page" data-case-id="{{ case.id }}" data-sig="{{ state.sig }}">
+<div class="page-head">
+  <a class="back" href="{{ url_for('clinic') }}">← 案例列表</a>
+  <h1>{{ case.pet_name }}<span class="muted">（{{ case.species }}）</span></h1>
+  <span class="muted">飼主 {{ case.owner_name }}</span>
+  <span class="badge s-{{ case.status }}">{{ status_label }}</span>
+  <a class="btn small" href="{{ url_for('phone', case_id=case.id) }}" target="_blank" rel="noopener">開啟飼主手機</a>
+</div>
+
+<div class="case-grid">
+  <section class="card" id="summary">
+    <div class="card-head"><h2>問診摘要</h2><span class="tag-ai">AI 整理，供醫師參考</span></div>
+    {% if summary %}
+    <p class="timeline">{{ summary.timeline }}</p>
+    <dl class="kv">
+      {% for key, label in field_labels.items() if summary.fields.get(key) or key != 'history' %}
+      <dt>{{ label }}</dt><dd>{{ summary.fields.get(key) or '未提供' }}</dd>
+      {% endfor %}
+    </dl>
+    {% if summary.owner_quotes %}
+    <h3>飼主原話</h3>
+    {% for q in summary.owner_quotes %}<blockquote>{{ q }}</blockquote>{% endfor %}
+    {% endif %}
+    {% if state.photo or summary.photo_desc %}
+    <h3>照片</h3>
+    <figure class="photo">
+      {% if state.photo %}<img src="{{ state.photo }}" alt="飼主上傳的照片">{% endif %}
+      <figcaption><span class="tag-ai">AI 描述</span> {{ summary.photo_desc or '（AI 沒有產生描述）' }}</figcaption>
+    </figure>
+    {% endif %}
+    {% if summary.open_questions %}
+    <h3>待確認事項</h3>
+    <ul class="open-q">{% for q in summary.open_questions %}<li>{{ q }}</li>{% endfor %}</ul>
+    {% endif %}
+    {% else %}
+    {% if state.case.status in ('intake', 'awaiting_confirm') %}
+    <p class="empty">飼主還沒送出問診。目前狀態：{{ status_label }}。</p>
+    {% else %}
+    <p class="empty">AI 正在整理摘要，請稍後重新整理。</p>
+    {% endif %}
+    {% endif %}
+  </section>
+
+  <section class="card" id="order">
+    <div class="card-head"><h2>醫囑</h2><span class="muted">由{{ vet }}填寫</span></div>
+    {% if case.status in ('submitted', 'ordered') %}
+    {{ order_form(order, '重新產生照護計畫' if case.status == 'ordered' else '送出醫囑，產生照護計畫', '') }}
+    {% elif case.status == 'in_care' %}
+    {% if order %}{{ order_view(order) }}{% endif %}
+    {# 照護中修改醫囑：核可新計畫前，提醒照舊醫囑送；有待核可的新版時預設展開 #}
+    <details class="revise" {{ 'open' if revision }}>
+      <summary>修改醫囑{{ '（新版待核可）' if revision }}</summary>
+      {{ order_form(revision or order, '產生新的照護計畫', '核可後，還沒送出的提醒會取消，改照新醫囑重新排程；已送出的提醒不受影響。') }}
+    </details>
+    {% elif order %}
+    {{ order_view(order) }}
+    {% else %}
+    <p class="empty">飼主還沒送出問診，暫時不能開醫囑。</p>
+    {% endif %}
+  </section>
+
+  {% if plan %}
+  <section class="card wide" id="plan">
+    <div class="card-head">
+      <h2>照護計畫</h2>
+      {% if plan.status == 'pending' %}<span class="badge s-ordered">待{{ vet }}核可</span>{% else %}<span class="badge s-in_care">已核可並送出</span>{% endif %}
+    </div>
+    <div class="compare">
+      <div class="pane">
+        <h3>醫囑原文<span class="muted">{{ vet }}填寫</span></h3>
+        {{ order_view(plan.order) }}
+      </div>
+      <div class="pane edit">
+        <h3>AI 照護計畫草稿{% if plan.status == 'pending' %}<span class="muted">要修改請改左邊的醫囑，重新產生</span>{% endif %}</h3>
+        {{ guardrail_box(plan.flags) }}
+        {% if plan.status == 'pending' %}
+        <form action="{{ url_for('approve', draft_id=plan.id) }}" method="post" data-async data-busy="送出中…"
+              {% if plan.flags %}data-confirm="護欄有 {{ plan.flags|length }} 項提醒，確定仍要核可並送出？"{% endif %}>
+          <div class="msg-preview">
+            <div class="preview-head">{{ ('這是' ~ vet ~ '更新後的醫囑。之前排好、還沒送出的提醒已取消，之後照這份醫囑提醒您。') if case.status == 'in_care' else ('這是' ~ vet ~ '的醫囑') }}</div>
+            <textarea name="final_text" id="final-text" rows="{{ [plan.body.count('\n') + 3, 7]|max }}" readonly required>{{ plan.body }}</textarea>
+            <div class="preview-foot" id="disclaimer">{{ disclaimer }}</div>
+          </div>
+          <p class="form-error" hidden></p>
+          <button type="submit" class="btn primary big">核可並送出</button>
+          <p class="hint">飼主會在手機上看到上方的內容，並依醫囑開始收到提醒。{{ '核可後，還沒送出的提醒會取消，改照這份新醫囑重新排程；回診天數從核可當天起算。' if case.status == 'in_care' }}</p>
+        </form>
+        {% else %}
+        <p class="sent-note">已於 {{ plan.sent }} 核可並送出給飼主{{ '（醫師有修改文字）' if plan.edited else '（未修改）' }}。完整內容見下方對話。</p>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="card" id="conversation">
+    <div class="card-head"><h2>完整對話</h2></div>
+    {% if state.messages %}
+    <ul class="log">
+      {% for m in state.messages %}
+      <li class="log-{{ m.sender }}">
+        <span class="who">{{ {'owner': '飼主', 'ai': 'AI', 'vet': vet, 'system': '系統'}[m.sender] }}</span>
+        <div class="log-body">
+          {% if m.image %}<img src="{{ m.image }}" alt="飼主上傳的照片">{% endif %}
+          {% if m.text %}<div class="log-text">{{ m.text }}</div>{% endif %}
+        </div>
+        <time>{{ m.time }}</time>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}<p class="empty">還沒有對話。</p>{% endif %}
+  </section>
+
+  <section class="card" id="reminders">
+    <div class="card-head">
+      <h2>提醒</h2>
+      {% set unsent = state.reminders|rejectattr('sent_at')|list %}
+      {% if state.reminders %}
+      <form action="{{ url_for('fast_forward', case_id=case.id) }}" method="post" data-async data-busy="送出中…">
+        <button type="submit" class="btn small primary" {{ 'disabled' if not unsent }}>快轉到下一個提醒</button>
+      </form>
+      {% endif %}
+    </div>
+    {% if state.reminders %}
+    <table class="rem">
+      <thead><tr><th>預定時間</th><th>類型</th><th>送出</th><th>飼主回報</th></tr></thead>
+      <tbody>
+        {% for r in state.reminders %}
+        <tr class="{{ 'done' if r.sent_at }}">
+          <td>{{ r.due }}</td><td>{{ r.kind_label }}</td>
+          <td>{{ ('已送出 ' ~ r.sent) if r.sent_at else '尚未送出' }}</td>
+          <td>{{ ('已餵 ' ~ r.acked) if r.acked_at else '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="empty">核可照護計畫後，才會建立用藥與回診提醒。</p>
+    {% endif %}
+  </section>
+</div>
+</div>
+{% endblock %}

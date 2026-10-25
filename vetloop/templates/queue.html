@@ -1,0 +1,44 @@
+{% extends "clinic_base.html" %}
+{% from "macros.html" import guardrail_box %}
+{% block title %}待審佇列{% endblock %}
+{% block main %}
+<div id="queue-page" data-count="{{ pending }}">
+<div class="page-head">
+  <h1>待審佇列</h1>
+  <p class="muted">飼主在照護期間傳來的訊息。AI 只起草，醫師核可後才會送給飼主。</p>
+</div>
+{% for d in drafts %}
+<article class="card draft" id="draft-{{ d.id }}">
+  <header class="draft-head">
+    <strong>{{ d.pet_name }}</strong><span class="muted">{{ d.owner_name }}</span>
+    <span class="badge {{ 's-ordered' if d.kind == 'reply' else 's-awaiting_confirm' }}">{{ '回覆草稿' if d.kind == 'reply' else '需人員回覆' }}</span>
+    <time class="muted">{{ d.time }}</time>
+  </header>
+  <div class="compare">
+    <div class="pane">
+      <h3>飼主最近說</h3>
+      <blockquote>{{ d.owner_text or '（傳了一張照片）' }}</blockquote>
+      <h3>變化摘要<span class="tag-ai">AI 整理</span></h3>
+      <p>{{ d.summary }}</p>
+      {{ guardrail_box(d.flags, 'guardrail-' ~ d.id, '通過：沒有發現病名、診斷用語、嚴重度分級、用藥建議或產品推薦。') }}
+    </div>
+    <form class="pane edit" action="{{ url_for('approve', draft_id=d.id) }}" method="post" data-async data-busy="送出中…"
+          {% if d.flags %}data-confirm="護欄有 {{ d.flags|length }} 項提醒，確定仍要核可並送出？"{% endif %}>
+      <h3>{{ '回覆（AI 草稿，可編輯）' if d.kind == 'reply' else '回覆（請人員撰寫）' }}</h3>
+      <div class="msg-preview">
+        <textarea name="final_text" rows="5" required placeholder="輸入要送給飼主的回覆">{{ d.body }}</textarea>
+        <div class="preview-foot">送出時會自動附上：（{{ d.vet_name }}已確認）<br>{{ short_note }}</div>
+      </div>
+      <p class="form-error" hidden></p>
+      <button type="submit" class="btn primary big">核可並送出</button>
+    </form>
+  </div>
+</article>
+{% else %}
+<section class="card empty-card">
+  <p>目前沒有待審項目。</p>
+  <p class="muted">飼主在照護期間傳來訊息時，AI 草稿會出現在這裡。</p>
+</section>
+{% endfor %}
+</div>
+{% endblock %}
