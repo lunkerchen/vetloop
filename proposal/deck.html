@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>VetLoop 初賽提案</title>
+<style>
+  @page { size: 1280px 720px; margin: 0; }
+  :root { --red: #E2001A; --pink: #FFF1F3; --grey: #F5F5F5; --ink: #333; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "PingFang TC", "Heiti TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+    color: var(--ink); background: #fff;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  .slide {
+    width: 1280px; height: 720px; position: relative; overflow: hidden;
+    page-break-after: always; break-after: page; background: #fff;
+    padding: 0 72px;
+  }
+  .slide:last-child { page-break-after: auto; break-after: auto; }
+  .num { position: absolute; left: 72px; top: 44px; color: var(--red); font-size: 15px; font-weight: 700; }
+  h1.title { position: absolute; left: 130px; top: 30px; margin: 0; color: var(--red); font-size: 32px; font-weight: 700; line-height: 1.2; }
+  .rule { position: absolute; left: 72px; right: 72px; top: 118px; height: 3px; background: var(--red); }
+  .label { position: absolute; left: 72px; right: 72px; top: 140px; height: 42px; background: var(--pink);
+           color: var(--red); font-size: 17px; line-height: 42px; padding-left: 16px; }
+  .logo { position: absolute; left: 72px; bottom: 36px; height: 62px; }
+  .panel { position: absolute; background: var(--grey); padding: 18px 22px; }
+  .panel.pink { background: var(--pink); }
+  .panel h3 { margin: 0 0 14px; color: var(--red); font-size: 23px; }
+  .panel ul { margin: 0; padding-left: 22px; font-size: 19px; line-height: 1.7; }
+  .panel li + li { margin-top: 6px; }
+  .panel p { margin: 0; font-size: 19px; line-height: 1.7; }
+  .muted { color: #666; }
+  .tbd { color: var(--red); }
+
+  /* cover */
+  .cover { background: var(--red); color: #fff; }
+  .cover .kicker { position: absolute; left: 72px; top: 110px; font-size: 19px; }
+  .cover h1 { position: absolute; left: 72px; top: 200px; margin: 0; font-size: 110px; font-weight: 700; letter-spacing: 1px; }
+  .cover .tag { position: absolute; left: 72px; top: 370px; font-size: 30px; line-height: 1.5; }
+  .cover .bar { position: absolute; left: 72px; top: 500px; width: 180px; height: 3px; background: #fff; }
+  .cover .meta { position: absolute; left: 72px; top: 530px; font-size: 19px; line-height: 1.8; }
+
+  /* 02 steps */
+  .flow { position: absolute; left: 72px; right: 72px; }
+  .step { position: absolute; width: 150px; height: 96px; background: var(--pink); color: var(--red);
+          font-size: 16px; font-weight: 700; line-height: 1.4; text-align: center; display: flex;
+          align-items: center; justify-content: center; padding: 8px; }
+  .step.hot { background: var(--red); color: #fff; }
+  .step.alert { background: #fff; border: 2px solid var(--red); }
+
+  /* 04 AI cards */
+  .card { position: absolute; top: 210px; width: 270px; height: 290px; background: var(--pink); padding: 20px; }
+  .card.grey { background: var(--grey); }
+  .card h3 { margin: 0 0 12px; color: var(--red); font-size: 21px; }
+  .card p { margin: 0; font-size: 18px; line-height: 1.7; }
+
+  /* 05 demo */
+  .shot { position: absolute; background: #fff; border: 1px solid #e5e5e5; object-fit: contain; }
+  .cap { position: absolute; font-size: 15px; color: #444; }
+
+  /* required health disclaimer (注意事項 第 35 點) */
+  .notice { position: absolute; left: 200px; right: 72px; bottom: 30px; font-size: 14px; line-height: 1.5; color: #444; }
+
+  /* 06 / 07 / 08 */
+  .sub { position: absolute; font-size: 17px; line-height: 1.7; }
+</style>
+</head>
+<body>
+
+<!-- 0 cover -->
+<section class="slide cover">
+  <div class="kicker">2026 法國皇家 AI for Pets 創新徵件計畫｜初賽提案</div>
+  <h1>VetLoop</h1>
+  <div class="tag">獸醫在環的照護助手<br>AI 整理，獸醫核可，才送到飼主手上</div>
+  <div class="bar"></div>
+  <div class="meta">主題：獸醫照護<br>團隊名稱：VetLoop 獸醫迴路｜隊長：陳政融（單人團隊）</div>
+</section>
+
+<!-- 01 summary -->
+<section class="slide">
+  <div class="num">01</div>
+  <h1 class="title">提案摘要</h1>
+  <div class="rule"></div>
+  <div class="label">以簡短內容協助評審快速掌握提案核心</div>
+  <div class="panel" style="left:72px; top:206px; width:560px; height:400px;">
+    <h3>作品與問題</h3>
+    <ul>
+      <li>作品：VetLoop，獸醫在環的照護 Prototype</li>
+      <li>主題：獸醫照護</li>
+      <li>問題：就醫後的居家照護，飼主回報分散；醫囑轉成白話與提醒靠人工，獸醫難以即時掌握</li>
+    </ul>
+  </div>
+  <div class="panel" style="left:652px; top:206px; width:556px; height:400px;">
+    <h3>方案與價值</h3>
+    <ul>
+      <li>AI 把飼主的問診整理成摘要，獸醫檢視後開醫囑</li>
+      <li>AI 把醫囑改寫成白話照護計畫，獸醫核可後才送出</li>
+      <li>照護期間依醫囑定時提醒；飼主回報由 AI 起草回覆，獸醫審核後才送出</li>
+    </ul>
+  </div>
+  <img class="logo" src="assets/logo.png" alt="">
+</section>
+
+<!-- 02 problem -->
+<section class="slide">
+  <div class="num">02</div>
+  <h1 class="title">問題定義與目標對象</h1>
+  <div class="rule"></div>
+  <div class="label">說明團隊欲解決的真實問題，以及問題發生的情境與影響</div>
+  <div class="panel" style="left:72px; top:206px; width:360px; height:400px;">
+    <h3>目標對象</h3>
+    <ul>
+      <li>貓、犬的飼主（居家照護者）</li>
+      <li>獸醫師與診所櫃台人員</li>
+    </ul>
+  </div>
+  <div class="panel" style="left:460px; top:206px; width:360px; height:400px;">
+    <h3>使用情境</h3>
+    <ul>
+      <li>就醫後在家服藥、調整飲食、準時回診</li>
+      <li>照護期間飼主傳來新狀況，需要獸醫判斷</li>
+    </ul>
+  </div>
+  <div class="panel pink" style="left:848px; top:206px; width:360px; height:400px;">
+    <h3>現有痛點</h3>
+    <ul>
+      <li>問診要來回多次追問，資訊不完整</li>
+      <li>醫囑文字易漏、易誤解</li>
+      <li>照護中的回報無人整理，遺漏與延誤風險高</li>
+    </ul>
+  </div>
+  <img class="logo" src="assets/logo.png" alt="">
+</section>
+
+<!-- 03 solution -->
+<section class="slide">
+  <div class="num">03</div>
+  <h1 class="title">解決方案設計與使用情境</h1>
+  <div class="rule"></div>
+  <div class="label">作品如何解決問題，以及飼主與獸醫如何使用</div>
+  <div class="flow" style="top:206px; height:200px;">
+    <div class="step" style="left:0; top:0;">飼主描述狀況<br>（可附照片）</div>
+    <div class="step" style="left:200px; top:0;">系統固定問句追問<br>AI 整理問診摘要</div>
+    <div class="step" style="left:400px; top:0;">獸醫看摘要<br>開立醫囑</div>
+    <div class="step" style="left:600px; top:0;">AI 改寫為白話<br>照護計畫</div>
+    <div class="step hot" style="left:0; top:110px;">獸醫核可後<br>送達飼主</div>
+    <div class="step" style="left:200px; top:110px;">依醫囑定時提醒<br>飼主回報狀況</div>
+    <div class="step" style="left:400px; top:110px;">AI 起草回覆<br>獸醫審核後送出</div>
+  </div>
+  <div class="panel" style="left:72px; top:450px; width:1136px; height:170px;">
+    <p>緊急分流：訊息含緊急字眼（例如誤吞異物）時，不經 AI，直接請飼主立即致電醫院，後台同步轉紅通知。</p>
+    <p style="margin-top:8px;">獸醫端的「修改醫囑」會先存成待核可版本，核可前飼主端不會有任何變化。</p>
+  </div>
+  <p class="notice">本作品提供之資訊僅供輔助參考，不能取代獸醫師之診斷、治療或專業建議。貓犬之健康與營養需求可能因個體狀況而異，如有健康疑慮或需要調整飲食與照護方式，請諮詢合格獸醫師。</p>
+  <img class="logo" src="assets/logo.png" alt="">
+</section>
+
+<!-- 04 AI -->
+<section class="slide">
+  <div class="num">04</div>
+  <h1 class="title">AI 應用方法</h1>
+  <div class="rule"></div>
+  <div class="label">AI 在作品中的角色，以及如何協助解決問題</div>
+  <div class="card" style="left:72px;"><h3>問診擷取</h3><p>從飼主原話擷取 8 個欄位；追問句是固定的，AI 不自行寫追問。</p></div>
+  <div class="card" style="left:362px;"><h3>摘要與計畫</h3><p>AI 整理問診摘要；醫囑用藥行照原文產生，其餘由 AI 改寫成白話。</p></div>
+  <div class="card" style="left:652px;"><h3>回覆草稿</h3><p>飼主回報後 AI 起草回覆，放進待審佇列，獸醫改字後核可才送出。</p></div>
+  <div class="card grey" style="left:942px;"><h3>護欄</h3><p>規則比對：AI 產出不得含病名、診斷、劑量建議或品牌；緊急字眼不經 AI。</p></div>
+  <div class="sub" style="left:72px; top:540px; width:1136px;">
+    技術：Flask＋SQLite；AI 透過 Claude CLI 呼叫（預設 claude-haiku-5-5，可換模型）。<br>
+    資料：POC 全部使用模擬案例，不含真實飼主資料、真實診療紀錄或真實動物影像，也未連接真實醫院系統。
+  </div>
+  <p class="notice">本作品提供之資訊僅供輔助參考，不能取代獸醫師之診斷、治療或專業建議。貓犬之健康與營養需求可能因個體狀況而異，如有健康疑慮或需要調整飲食與照護方式，請諮詢合格獸醫師。</p>
+  <img class="logo" src="assets/logo.png" alt="">
+</section>
+
+<!-- 05 demo -->
+<section class="slide">
+  <div class="num">05</div>
+  <h1 class="title">Demo／Prototype 展示</h1>
+  <div class="rule"></div>
+  <div class="label">POC 已可在本機完整操作一遍流程（模擬案例）</div>
+  <img class="shot" src="../docs/screenshots/03-summary.png" style="left:72px; top:196px; width:520px; height:180px; object-fit:contain; border:none;" alt="">
+  <div class="cap" style="left:72px; top:380px;">獸醫看到問診摘要</div>
+  <img class="shot" src="../docs/screenshots/04-plan.png" style="left:668px; top:196px; width:540px; height:180px; object-fit:contain; border:none;" alt="">
+  <div class="cap" style="left:668px; top:380px;">醫囑原文與 AI 照護計畫對照</div>
+  <img class="shot" src="../docs/screenshots/06-queue.png" style="left:72px; top:420px; width:520px; height:180px; object-fit:contain; border:none;" alt="">
+  <div class="cap" style="left:72px; top:604px;">AI 回覆草稿進入待審佇列</div>
+  <img class="shot" src="../docs/screenshots/10-emergency-clinic.png" style="left:668px; top:420px; width:540px; height:180px; object-fit:contain; border:none;" alt="">
+  <div class="cap" style="left:668px; top:604px;">緊急通知轉紅，後台即時看到</div>
+  <p class="notice">本作品提供之資訊僅供輔助參考，不能取代獸醫師之診斷、治療或專業建議。貓犬之健康與營養需求可能因個體狀況而異，如有健康疑慮或需要調整飲食與照護方式，請諮詢合格獸醫師。</p>
+  <img class="logo" src="assets/logo.png" alt="">
+</section>
+
+<!-- 06 value / feasibility -->
+<section class="slide">
+  <div class="num">06</div>
+  <h1 class="title">獨特性、可行性與預期效益</h1>
+  <div class="rule"></div>
+  <div class="panel" style="left:72px; top:150px; width:556px; height:220px;">
+    <h3>現有做法與限制</h3>
+    <ul>
+      <li>問診靠人工來回追問；醫囑與照護提醒分散在不同管道</li>
+      <li>照護期間回報沒有統一流程，難以追蹤</li>
+    </ul>
+  </div>
+  <div class="panel pink" style="left:652px; top:150px; width:556px; height:220px;">
+    <h3>本方案的差異</h3>
+    <ul>
+      <li>AI 只做整理與草稿，飼主收到的健康內容都經獸醫核可</li>
+      <li>提醒依醫囑自動排程，醫囑變更時舊提醒自動取消重排</li>
+    </ul>
+  </div>
+  <div class="panel" style="left:72px; top:386px; width:556px; height:220px;">
+    <h3>技術與執行可行性</h3>
+    <ul>
+      <li>已完成可執行的 Prototype，171 個自動化測試通過（測試使用假的 LLM）</li>
+      <li>流程與護欄以規則實作，不依賴模型自律</li>
+    </ul>
+  </div>
+  <div class="panel pink" style="left:652px; top:386px; width:556px; height:220px;">
+    <h3>限制與因應</h3>
+    <ul>
+      <li>護欄是關鍵字規則，擋不完所有說法：自由文字不自動送給飼主，其餘交獸醫審核</li>
+      <li>緊急字眼寧可誤報不漏報；POC 不含真實資料，僅供本機示範</li>
+    </ul>
+  </div>
+  <img class="logo" src="assets/logo.png" alt="">
+</section>
+
+<!-- 07 future -->
+<section class="slide">
+  <div class="num">07</div>
+  <h1 class="title">後續發展潛力</h1>
+  <div class="rule"></div>
+  <div class="label">功能擴充、合作對象與落地方向（規劃中，尚未實作）</div>
+  <div class="panel" style="left:72px; top:206px; width:360px; height:400px;">
+    <h3>接通實際管道</h3>
+    <ul>
+      <li>對接飼主常用的通訊平台（例如官方帳號），取代目前的模擬手機介面</li>
+      <li>醫院端接入既有看診系統</li>
+    </ul>
+  </div>
+  <div class="panel" style="left:460px; top:206px; width:360px; height:400px;">
+    <h3>擴大照護場域</h3>
+    <ul>
+      <li>收容與領養場域：追蹤照護與送養資訊</li>
+      <li>以獸醫端的修改與駁回紀錄，改善護欄規則</li>
+    </ul>
+  </div>
+  <div class="panel pink" style="left:848px; top:206px; width:360px; height:400px;">
+    <h3>合作與驗證</h3>
+    <ul>
+      <li>與動物醫院試營運，量測獸醫審核時間與飼主回覆率</li>
+      <li>邀請獸醫師審查護欄與提示文字</li>
+    </ul>
+  </div>
+  <img class="logo" src="assets/logo.png" alt="">
+</section>
+
+<!-- 08 team -->
+<section class="slide">
+  <div class="num">08</div>
+  <h1 class="title">團隊與補充資料</h1>
+  <div class="rule"></div>
+  <div class="panel" style="left:72px; top:150px; width:500px; height:440px;">
+    <h3>團隊與分工</h3>
+    <ul>
+      <li>團隊名稱：VetLoop 獸醫迴路</li>
+      <li>隊長：陳政融</li>
+      <li>隊員：陳政融（單人團隊，即隊長本人）</li>
+      <li>指導老師：無</li>
+    </ul>
+  </div>
+  <div class="panel pink" style="left:612px; top:150px; width:596px; height:440px;">
+    <h3>既有基礎與補充</h3>
+    <ul>
+      <li>既有作品：VetLoop POC（本機可執行，含 171 個自動化測試）</li>
+      <li>第三方資源：Flask、SQLite、Claude CLI（預設 claude-haiku-5-5）、Royal Canin 官方 logo（模板提供）</li>
+      <li class="tbd">原創與新增開發內容說明：［待團隊確認］</li>
+      <li>程式碼連結：github.com/lunkerchen/vetloop</li>
+      <li class="tbd">參考資料與授權：［待填］</li>
+    </ul>
+  </div>
+  <img class="logo" src="assets/logo.png" alt="">
+</section>
+
+</body>
+</html>
