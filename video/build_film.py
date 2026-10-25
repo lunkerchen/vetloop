@@ -6,6 +6,7 @@
 """
 import html
 import json
+import math
 import subprocess
 from pathlib import Path
 
@@ -20,6 +21,7 @@ END_AT = 198.5 - MUSIC_IN           # 111.0
 END_CARD_AT = END_AT - 2.0          # 片尾卡提早 2 秒進場，提示文字停留約 9 秒；重音處標誌再彈一次
 TOTAL = END_AT + 8.0                # 119.0
 DEMO_AT = 9.0
+WAIT_CAP = 3.0                      # 4× 以上的快轉段都是等 LLM；重試拉長的等待也壓在這個秒數內
 
 DISCLAIMER = "本作品提供之資訊僅供輔助參考，不能取代獸醫師之診斷、治療或專業建議。貓犬之健康與營養需求可能因個體狀況而異，如有健康疑慮或需要調整飲食與照護方式，請諮詢合格獸醫師。"
 
@@ -151,6 +153,9 @@ def build():
     prev_page = None
     switches = []                     # (時間, 離開的舞台, 進入的舞台)
     for i, (page, a, b, rate, camk, capk, chip) in enumerate(SHOTS):
+        if rate >= 4 and (b - a) / rate > WAIT_CAP:
+            rate = math.ceil((b - a) / WAIT_CAP)
+            chip = f"快轉 {rate}×"
         dur = (b - a) / rate
         assert dur > 0, (i, a, b)
         vids.append(dict(id=f"s{i}", page=page, start=t, dur=dur, ms=a, rate=rate))
@@ -341,6 +346,7 @@ def main():
 def subset_fonts(page):
     """字型只留用到的字，渲染時少載 50MB。"""
     text = "".join(sorted(set(page))) + "0123456789"
+    (FILM / "assets/fonts").mkdir(parents=True, exist_ok=True)
     (FILM / "assets/fonts/chars.txt").write_text(text)
     for wt in ("Regular", "Medium", "Bold"):
         src = Path.home() / f"Library/Fonts/SourceHanSansTC-{wt}.otf"

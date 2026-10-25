@@ -147,8 +147,8 @@ try {
   await click(clinic, clinic.page.locator('tr', { hasText: '麻糬' }).locator('a', { hasText: '開啟案例' }));
   await clinic.page.waitForLoadState('load');
   // 摘要是送出後才由 LLM 產生：還在整理就等「有新動態」提示再點（和真實操作一樣）
+  await mark(clinic, 'summary:pending'); // 已經整理好也要記，剪輯表用它當分界
   if ((await clinic.page.locator('#summary').innerText()).includes('正在整理')) {
-    await mark(clinic, 'summary:pending');
     await clinic.page.locator('#update-pill').waitFor({ state: 'visible', timeout: AI_TIMEOUT });
     await pause(clinic, 900);
     await click(clinic, '#update-pill');
@@ -243,11 +243,14 @@ try {
   await clinic.page.waitForLoadState('load');
   await pause(clinic, 1000);
   await ownerSay(phone2, '牠剛剛好像吞了一段繩子', 'emergency');
-  await clinic.page.locator('#alert-list .alert-item').first().waitFor({ state: 'visible', timeout: 20_000 }).catch(() => {});
+  await clinic.page.locator('#alert-list .alert-item').first().waitFor({ state: 'visible', timeout: 20_000 });
   await pause(clinic, 2500);
   await mark(clinic, 'emergency:alert', '#alerts');
-  await pause(clinic, 2000);
+  await pause(clinic, 3500); // 最後一個鏡頭用到 emergency:alert 後 5.2 秒（片段會多留 2 秒）
   await mark(clinic, 'end');
+
+  // 先停錄，下面切到案例頁收文字時才不會錄進去
+  for (const p of [phone, clinic, phone2]) await p.cdp.send('Page.stopScreencast').catch(() => {});
 
   // 收尾：把最後的文字存下來，後製前人工檢查有沒有病名或診斷用語
   const texts = {};
@@ -258,7 +261,6 @@ try {
   fs.writeFileSync(path.join(OUT, 'texts.json'), JSON.stringify(texts, null, 2));
 
   for (const p of [phone, clinic, phone2]) {
-    await p.cdp.send('Page.stopScreencast').catch(() => {});
     fs.writeFileSync(path.join(p.dir, 'frames.json'), JSON.stringify({ zoom: p.zoom, viewport: p.viewport, frames: p.frames }));
   }
   fs.writeFileSync(path.join(OUT, 'events.json'), JSON.stringify(events, null, 2));
