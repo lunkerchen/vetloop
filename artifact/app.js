@@ -25,6 +25,7 @@
 
   // ---- 罐頭訊息 ----
   // intake 每則附上欄位（照抄飼主原句）；care 每則附上變化摘要與回覆草稿（醫師核可後才送出）。都已過護欄檢查。
+  // 醫囑是醫師現場填的，回覆草稿只能說「照醫囑」，不寫具體的飲食、用藥或回診內容。
   const EMERGENCY = { text: "牠剛剛突然抽搐，叫牠都沒反應", hint: "示範：緊急狀況", urgent: true };
   const SCRIPTS = {
     1: {
@@ -40,7 +41,7 @@
       waiting: { text: "請問看診前需要先禁食嗎？" },
       care: [
         { text: "今天早上又吐了一次", summary: "飼主回報照護期間早上又吐了一次",
-          reply: "謝謝您告訴我。請照醫囑繼續少量多餐，留意今天還有沒有再吐；有疑慮請直接來電。" },
+          reply: "謝謝您告訴我。請照醫囑繼續照顧，留意今天還有沒有再吐；有疑慮請直接來電。" },
         { text: "藥餵不太進去，牠一直吐出來", summary: "飼主回報餵藥困難，藥會被吐出來",
           reply: "謝謝您告訴我。餵藥有困難請直接來電，我們一起看看怎麼處理比較好。" },
         { text: "今天精神好很多，有吃一點東西", summary: "飼主回報精神變好，開始進食",
@@ -608,7 +609,8 @@
   }
 
   function listPage() {
-    const alerts = [...S.alerts].sort((a, b) => b.id - a.id).slice(0, 20), unseen = alerts.filter((a) => !a.seen).length;
+    // 已讀的只留最近 20 則；未讀的全部列出，上方的緊急數字才按得掉
+    const alerts = [...S.alerts].sort((a, b) => b.id - a.id).filter((a, i) => !a.seen || i < 20), unseen = alerts.filter((a) => !a.seen).length;
     const pending = pendingCount();
     return h`<div class="list-grid">
       <div class="stack">
